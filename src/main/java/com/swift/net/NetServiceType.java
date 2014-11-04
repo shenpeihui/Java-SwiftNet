@@ -18,17 +18,17 @@ import com.swift.net.socket.coder.SocketMessageEncode;
  * @date 2014年10月18日 下午6:44:16
  *
  */
-public enum NetworkServiceType {
+public enum NetServiceType {
 
 	/**
 	 * Socket
 	 */
-	SOCKET("socket", new SocketMessageEncode(), new SocketMessageDecode()),
+	SOCKET("socket", SocketMessageEncode.class, SocketMessageDecode.class),
 
 	/**
 	 * Http
 	 */
-	HTTP("http", new HttpMessageEncode(), new HttpMessageDecode());
+	HTTP("http", HttpMessageEncode.class, HttpMessageDecode.class);
 
 	/**
 	 * 名称
@@ -36,14 +36,14 @@ public enum NetworkServiceType {
 	private final String name;
 
 	/**
-	 * 消息编码器
+	 * 消息编码器.class
 	 */
-	private final MessageEncode encode;
+	private final Class<? extends MessageEncode> encodeClass;
 
 	/**
-	 * 消息解码器
+	 * 消息解码器.class
 	 */
-	private final MessageDecode decode;
+	private final Class<? extends MessageDecode> decodeClass;
 
 	/**
 	 * @param <T>
@@ -52,10 +52,11 @@ public enum NetworkServiceType {
 	 * 
 	 * @param name
 	 */
-	private <T extends ChannelHandlerAdapter> NetworkServiceType(String name, MessageEncode encode, MessageDecode decode) {
+	private <T extends ChannelHandlerAdapter> NetServiceType(String name, Class<? extends MessageEncode> encodeClass,
+			Class<? extends MessageDecode> decodeClass) {
 		this.name = name;
-		this.encode = encode;
-		this.decode = decode;
+		this.encodeClass = encodeClass;
+		this.decodeClass = decodeClass;
 	}
 
 	/**
@@ -69,55 +70,34 @@ public enum NetworkServiceType {
 
 	/**
 	 * 获取消息编码器
+	 * 
 	 * @return MessageEncode
 	 */
 	public final MessageEncode getEncode() {
-		return encode;
+		try {
+			return encodeClass.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	/**
 	 * 获取消息解码器
+	 * 
 	 * @return MessageDecode
 	 */
 	public final MessageDecode getDecode() {
-		return decode;
+		try {
+			return decodeClass.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
 	}
-
-
-	// /**
-	// * Socket
-	// */
-	// SOCKET("socket"),
-	//
-	// /**
-	// * Http
-	// */
-	// HTTP("http");
-	//
-	// /**
-	// * 名称
-	// */
-	// private final String name;
-	//
-	// /**
-	// * @param <T>
-	// * @Title: TODO
-	// * @Description: TODO
-	// *
-	// * @param name
-	// */
-	// private <T extends ChannelHandlerAdapter> NetworkServiceType(String name)
-	// {
-	// this.name = name;
-	// }
-	//
-	// /**
-	// * 获取名称
-	// *
-	// * @return String
-	// */
-	// public String getName() {
-	// return name;
-	// }
 
 }

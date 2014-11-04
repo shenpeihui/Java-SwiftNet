@@ -1,4 +1,4 @@
-package com.swift.net;
+package com.test.swift.net;
 
 import org.junit.Test;
 
